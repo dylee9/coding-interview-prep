@@ -1,4 +1,4 @@
-# Data Structures
+## Data Structures
 
 # Graphs
 # As adjacency list
@@ -20,8 +20,6 @@ class Graph_AM:
 		self.count = 0
 
 	def addVertex(self, i):
-		print(self.count)
-		print(self.graph)
 		self.count += 1
 
 		if self.count > 1:
@@ -32,15 +30,13 @@ class Graph_AM:
 		for _ in range(self.count+1):
 			tmp.append(0)
 
-		self.graph.append(list())
-
-		print(self.count)
-		print(self.graph)
+		self.graph.append(tmp)
 
 	def addEdge(self, i, j):
 		assert i < len(self.graph) 
 		assert j < len(self.graph)
 		self.graph[i][j] = 1
+		self.graph[j][i] = 1
 
 # As Undirected Graph
 class Node:
@@ -75,7 +71,7 @@ class Graph:
 			print("Error: nodes not found")
 
 
-# Search Algos
+## Search Algos
 
 # Linear Search (lists, iterative)
 # Time: O(N)
@@ -109,19 +105,19 @@ def bin_search_iter(arr, n):
 # Space: O(log N) -> from call stack
 def bin_search_rec(arr, n):
 
-	def helper(arr, lo, hi):
+	def helper(lo, hi):
 		if lo > hi:
 			return -1
 
 		mid = lo + (hi - lo) // 2
 		if arr[mid] > n:
-			return helper(arr[:mid], lo, mid-1)
+			return helper(lo, mid-1)
 		elif arr[mid] < n:
-			return helper(arr[mid+1:], mid+1, hi)
+			return helper(mid+1, hi)
 		else:
 			return mid
 
-	return helper(arr, 0, len(arr)-1)
+	return helper(0, len(arr)-1)
 
 # Depth-First Search
 # Iterative approach using Adjacency List
@@ -137,10 +133,10 @@ def DFS_iter_AL(G, u, v):
 
 	while stack:
 		node = stack.pop()
-		print(node)
+		# print(node)
 		if node == v:
 			return True
-		for neighbor in G[node]:
+		for neighbor in G.graph[node]:
 			if neighbor not in visited:
 				visited.add(neighbor)
 				stack.append(neighbor)
@@ -153,11 +149,11 @@ def DFS_iter_AL(G, u, v):
 def DFS_rec_AL(G, u, v):
 
 	def dfs(visited, node):
-		print(node)
-		if G[node] == v:
+		# print(node)
+		if node == v:
 			return True
 
-		for neighbor in G[node]:
+		for neighbor in G.graph[node]:
 			if neighbor not in visited:
 				visited.add(neighbor)
 				res = dfs(visited, neighbor)
@@ -181,10 +177,10 @@ def DFS_iter_AM(G, i, j):
 
 	while stack:
 		curr = stack.pop()
-		print(curr)
+		# print(curr)
 		if curr == j:
 			return True
-		for node, connected in enumerate(G[curr]):
+		for node, connected in enumerate(G.graph[curr]):
 			if connected: # checks whether edge exists
 				if node not in visited:
 					visited.add(node)
@@ -198,11 +194,11 @@ def DFS_iter_AM(G, i, j):
 def DFS_rec_AM(G, u, v):
 
 	def dfs(visited, curr):
-		print(curr)
+		# print(curr)
 		if curr == v:
 			return True
 
-		for node, connected in enumerate(G[curr]):
+		for node, connected in enumerate(G.graph[curr]):
 			if connected: # check whether edge exists
 				if node not in visited:
 					visited.add(node)
@@ -226,7 +222,7 @@ def DFS_iter_UG(G, u, v):
 
 	while stack:
 		node = stack.pop()
-		print(node.value)
+		# print(node.value)
 		if node.value == v:
 			return True
 		for neighbor in node.neighbors:
@@ -242,7 +238,7 @@ def DFS_iter_UG(G, u, v):
 def DFS_rec_UG(G, u, v):
 
 	def dfs(visited, node):
-		print(node.value)
+		# print(node.value)
 		if node.value == v:
 			return True
 
@@ -270,11 +266,11 @@ def BFS_iter_AL(G, u, v):
 
 	while queue:
 		node = queue.pop(0)
-		print(node)
+		# print(node)
 		if node == v:
 			return True
 
-		for neighbor in G[node]:
+		for neighbor in G.graph[node]:
 			if neighbor not in visited:
 				visited.add(neighbor)
 				queue.append(neighbor)
@@ -291,18 +287,23 @@ def BFS_rec_AL(G, u, v):
 			return False
 
 		node = queue.pop(0)
-		print(node)
+		# print(node)
 		if node == v:
 			return True
 
-		for neighbor in G[node]:
+		for neighbor in G.graph[node]:
 			if neighbor not in visited:
 				visited.add(neighbor)
 				queue.append(neighbor)
 
 		return bfs(queue, visited)
 
-	return bfs([], set())
+	queue = []
+	visited = set()
+
+	queue.append(u)
+	visited.add(u)
+	return bfs(queue, visited)
 
 # Iterative approach using adjacency matrix
 # Time: O(V^2)
@@ -316,11 +317,11 @@ def BFS_iter_AM(G, u, v):
 
 	while queue:
 		curr = queue.pop(0)
-		print(curr)
+		# print(curr)
 		if curr == v:
 			return True
 
-		for node, connected in enumerate(G[curr]):
+		for node, connected in enumerate(G.graph[curr]):
 			if connected:
 				if node not in visited:
 					visited.add(node)
@@ -338,11 +339,11 @@ def BFS_rec_AM(G, u, v):
 			return False
 
 		curr = queue.pop(0)
-		print(curr)
+		# print(curr)
 		if curr ==  v:
 			return True
 
-		for node, connected in enumerate(G[curr]):
+		for node, connected in enumerate(G.graph[curr]):
 			if connected:
 				if node not in visited:
 					visited.add(node)
@@ -350,7 +351,12 @@ def BFS_rec_AM(G, u, v):
 
 		return bfs(queue, visited)
 
-	return bfs([], set())
+	queue = []
+	visited = set()
+
+	queue.append(u)
+	visited.add(u)
+	return bfs(queue, visited)
 
 # Iterative approach using undirected graph
 # Time: O(V+E)
@@ -365,7 +371,7 @@ def BFS_iter_UG(G, u, v):
 
 	while queue:
 		node = queue.pop(0)
-		print(node.value)
+		# print(node.value)
 		if node.value == v:
 			return True
 		for neighbor in node.neighbors:
@@ -385,18 +391,23 @@ def BFS_rec_UG(G, u, v):
 			return False
 
 		node = queue.pop(0)
-		print(node.val)
-		if node.val == v:
+		# print(node.value)
+		if node.value == v:
 			return True
 
 		for neighbor in node.neighbors:
-			if neighbor.val not in visited:
-				visited.append(neighbor.val)
+			if neighbor.value not in visited:
+				visited.add(neighbor.value)
 				queue.append(neighbor)
 
 		return bfs(queue, visited)
 
-	return bfs([], set())
+	queue = []
+	visited = set()
+
+	queue.append(G.getNode(u))
+	visited.add(u)
+	return bfs(queue, visited)
 
 """
 Note about DFS/BFS Complexity:
@@ -420,4 +431,111 @@ the space complexity is the max height of the traversal tree represented
 as h. BFS looks to search wide and shallow; thus, the space complexity
 is the max width of the traversal tree represented as w.
 """
+
+## Sorting Algos
+
+# Insertion Sort
+# Idea: For each element starting from the left, insert it between the smaller
+#       and larger element to the left of it.
+# Time: O(N^2) -> for every step, check every j to the left
+# Space: O(1)
+def insertion_sort(arr):
+
+	for step in range(1, len(arr)): # assume first index is sorted
+		key = arr[step]
+		j = step - 1
+
+		# compare key with each element to the left of it until smaller element
+		# is found. Copy elements larger than key to the right until initial
+		# smaller element and slide key in betweenn.
+		while j >= 0 and key < arr[j]:
+			arr[j+1] =  arr[j]
+			j -= 1
+
+		arr[j+1] = key
+
+	return arr
+
+# Heap Sort
+# Idea: Build a max-heap and pop the max element one at a time and heapify after
+#       each pop until no nodes remain.
+
+"""
+Notes about Heaps
+
+A binary tree is a heap iff:
+1. it is a complete binary tree (all leaf elements lean to the left & last 
+leaf element may not have a sibling)
+2. all nodes follow the property that the parent node has a greater value
+than its children (or smaller value for min heap)
+"""
+
+def heapify(arr, n, i):
+	# find the largest between parent and 2 children 
+	largest = i
+	l = 2 * i + 1
+	r = 2 * i + 2
+
+	if l < n and arr[i] < arr[l]:
+		largest = l
+
+	if r < n and arr[i] < arr[r]:
+		largest = r
+
+	# if parent is not largest, swap with largest and heapify down for swapped
+	if largest != i:
+		arr[i], arr[largest] = arr[largest], arr[i] # swap
+		heapify(arr, n, largest)
+
+# Time: O(Nlog N)
+# Space: O(1)
+"""
+Explanation for time complexity:
+
+Step 1: Building max/min heap
+We heapify for n/2 elements. Heapify will swap the root element all the way
+to the bottom of the tree at the worst case. The height of the tree is log n
+since it is a binary tree. Therefore, we do roughly n/2 * log n operations ~
+O(nlog n)
+
+Step 2: Sorting step
+We swap the root with the bottom element: O(1) and then we heapify the root,
+which will do at most log n swaps. We do this for all n nodes: O(nlog n)
+"""
+def heap_sort(arr):
+	n = len(arr)
+
+	# build a max-heap
+	# run heapify for every non-leaf node starting with bottom-right-most node
+	for i in range(n//2, -1, -1): # n//2 is the right-most non-leaf node
+		heapify(arr, n, i)
+
+	# sort 
+	for i in range(n-1, 0, -1):
+		# swap max (root) with last node
+		arr[i], arr[0] = arr[0], arr[i] 
+
+		# heapify from root (bubble down the minimum value)
+		# remove bottom right node by setting n argument to i
+		heapify(arr, i, 0)
+
+	return arr
+
+# Selection Sort
+# Idea: Find the smallest element and place it at the beginning of the array.
+#       Repeat again for elements that are not yet sorted.
+# Time: O(N^2)
+# Space: O(1)
+def selection_sort(arr):
+	for i in range(len(arr)):
+		min_idx = i
+		for j in range(i+1, len(arr)):
+			if arr[j] < arr[min_idx]:
+				min_idx = j
+		arr[i], arr[min_idx] = arr[min_idx], arr[i]
+
+	return arr
+
+
+
 
