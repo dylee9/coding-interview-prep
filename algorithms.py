@@ -11,6 +11,7 @@ class Graph_AL:
 
 	def addEdge(self, u, v):
 		self.graph[u].append(v)
+		self.graph[v].append(u)
 
 # As adjacency matrix
 class Graph_AM:
@@ -19,6 +20,8 @@ class Graph_AM:
 		self.count = 0
 
 	def addVertex(self, i):
+		print(self.count)
+		print(self.graph)
 		self.count += 1
 
 		if self.count > 1:
@@ -26,18 +29,20 @@ class Graph_AM:
 				vertex.append(0)
 
 		tmp = []
-		for _ in range(count):
+		for _ in range(self.count+1):
 			tmp.append(0)
 
 		self.graph.append(list())
+
+		print(self.count)
+		print(self.graph)
 
 	def addEdge(self, i, j):
 		assert i < len(self.graph) 
 		assert j < len(self.graph)
 		self.graph[i][j] = 1
 
-# As nodes
-
+# As Undirected Graph
 class Node:
 	def __init__(self, value):
 		self.value = value
@@ -152,7 +157,7 @@ def DFS_rec_AL(G, u, v):
 		if G[node] == v:
 			return True
 
-		for neighbor in range(G[node]):
+		for neighbor in G[node]:
 			if neighbor not in visited:
 				visited.add(neighbor)
 				res = dfs(visited, neighbor)
@@ -224,7 +229,7 @@ def DFS_iter_UG(G, u, v):
 		print(node.value)
 		if node.value == v:
 			return True
-		for neighbor in G.getNode(node_val).neighbors:
+		for neighbor in node.neighbors:
 			if neighbor.value not in visited:
 				visited.add(neighbor.value)
 				stack.append(neighbor)
@@ -251,9 +256,168 @@ def DFS_rec_UG(G, u, v):
 
 	return dfs(set(), G.getNode(u))
 
-	
+# Breadth First Search
 
+# Iterative approach using adjacency list
+# Time: O(V+E)
+# Space: O(w)
+def BFS_iter_AL(G, u, v):
+	visited = set()
+	queue = []
 
+	queue.append(u)
+	visited.add(u)
 
+	while queue:
+		node = queue.pop(0)
+		print(node)
+		if node == v:
+			return True
 
+		for neighbor in G[node]:
+			if neighbor not in visited:
+				visited.add(neighbor)
+				queue.append(neighbor)
+
+	return False
+
+# Recursive approach using adjacency list
+# Time: O(V+E)
+# Space: O(w)
+def BFS_rec_AL(G, u, v):
+
+	def bfs(queue, visited):
+		if not queue:
+			return False
+
+		node = queue.pop(0)
+		print(node)
+		if node == v:
+			return True
+
+		for neighbor in G[node]:
+			if neighbor not in visited:
+				visited.add(neighbor)
+				queue.append(neighbor)
+
+		return bfs(queue, visited)
+
+	return bfs([], set())
+
+# Iterative approach using adjacency matrix
+# Time: O(V^2)
+# Space: O(w)
+def BFS_iter_AM(G, u, v):
+	visited = set()
+	queue = []
+
+	queue.append(u)
+	visited.add(u)
+
+	while queue:
+		curr = queue.pop(0)
+		print(curr)
+		if curr == v:
+			return True
+
+		for node, connected in enumerate(G[curr]):
+			if connected:
+				if node not in visited:
+					visited.add(node)
+					queue.append(node)
+
+	return False
+
+# Recursive approach using adjacency matrix
+# Time: O(V^2)
+# Space: O(w)
+def BFS_rec_AM(G, u, v):
+
+	def bfs(queue, visited):
+		if not queue:
+			return False
+
+		curr = queue.pop(0)
+		print(curr)
+		if curr ==  v:
+			return True
+
+		for node, connected in enumerate(G[curr]):
+			if connected:
+				if node not in visited:
+					visited.add(node)
+					queue.append(node)
+
+		return bfs(queue, visited)
+
+	return bfs([], set())
+
+# Iterative approach using undirected graph
+# Time: O(V+E)
+# Space: O(w)
+def BFS_iter_UG(G, u, v):
+
+	visited = set()
+	queue = []
+
+	visited.add(u)
+	queue.append(G.getNode(u))
+
+	while queue:
+		node = queue.pop(0)
+		print(node.value)
+		if node.value == v:
+			return True
+		for neighbor in node.neighbors:
+			if neighbor.value not in visited:
+				visited.add(neighbor.value)
+				queue.append(neighbor)
+
+	return False
+
+# Recursive approach using undirected graph
+# Time: O(V+E)
+# Space: O(w)
+def BFS_rec_UG(G, u, v):
+
+	def bfs(queue, visited):
+		if not queue:
+			return False
+
+		node = queue.pop(0)
+		print(node.val)
+		if node.val == v:
+			return True
+
+		for neighbor in node.neighbors:
+			if neighbor.val not in visited:
+				visited.append(neighbor.val)
+				queue.append(neighbor)
+
+		return bfs(queue, visited)
+
+	return bfs([], set())
+
+"""
+Note about DFS/BFS Complexity:
+
+1. AL & UG  vs AM
+Unlike AL & UG, AM requires us to check each index of G[node] for each
+node we visit. Because len(G[node]) == |V|, we get a space complexity of
+O(V^2).
+
+2. Recursive vs Iterative
+Recursive and iterative approaches to DFS have no difference in time
+space complexity because the technical data structure 'space' not used
+in a recursive DFS function is instead used in the call-stack, which
+requires space. For BFS, the same queue data structure is used for both
+recursive & iterative so that makes the explanation easier.
+
+3. Space Complexity
+The easiest way to understand space complexity for DFS and BFS is by
+how they process graphs. DFS looks to search narrow and deep; thus, 
+the space complexity is the max height of the traversal tree represented
+as h. BFS looks to search wide and shallow; thus, the space complexity
+is the max width of the traversal tree represented as w.
+"""
 
