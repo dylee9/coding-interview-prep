@@ -1,5 +1,5 @@
 # Test Cases
-
+import random
 from algorithms import *
 
 def create_generic_test_graph1(G):
@@ -70,5 +70,65 @@ assert BFS_iter_UG(G_UG, 2, 6) == False, "testcases 28 failed..."
 assert BFS_rec_UG(G_UG, 3, 5) == True, "testcases 29 failed..."
 assert BFS_rec_UG(G_UG, 2, 6) == False, "testcases 30 failed..."
 print("Breadth First Search testcases passed...")
+
+## Sorting Algorithm Tests
+
+array1 = [1, 2, 2, 4, 5, 6, 8, 9, 10, 11]
+array2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# Insertion Sort
+random.shuffle(array1)
+random.shuffle(array2)
+insertion_sort(array1)
+insertion_sort(array2)
+assert array1 == [1, 2, 2, 4, 5, 6, 8, 9, 10, 11], "testcases 31 failed..."
+assert array2 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "testcases 32 failed..."
+print("Insertion Sort testcases passed...")
+
+# Heap Sort
+random.shuffle(array1)
+random.shuffle(array2)
+heap_sort(array1)
+heap_sort(array2)
+assert array1 == [1, 2, 2, 4, 5, 6, 8, 9, 10, 11], "testcases 33 failed..."
+assert array2 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "testcases 34 failed..."
+print("Heap Sort testcases passed...")
+
+# Selection Sort
+random.shuffle(array1)
+random.shuffle(array2)
+selection_sort(array1)
+selection_sort(array2)
+assert array1 == [1, 2, 2, 4, 5, 6, 8, 9, 10, 11], "testcases 35 failed..."
+assert array2 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "testcases 36 failed..."
+print("Selection Sort testcases passed...")
+
+# Merge Sort
+random.shuffle(array1)
+random.shuffle(array2)
+merge_sort(array1)
+merge_sort(array2)
+assert array1 == [1, 2, 2, 4, 5, 6, 8, 9, 10, 11], "testcases 37 failed..."
+assert array2 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "testcases 38 failed..."
+print("Merge Sort testcases passed...")
+
+# Quick Sort
+random.shuffle(array1)
+random.shuffle(array2)
+quick_sort(array1)
+quick_sort(array2)
+assert array1 == [1, 2, 2, 4, 5, 6, 8, 9, 10, 11], "testcases 39 failed..."
+assert array2 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "testcases 40 failed..."
+print("Quick Sort testcases passed...")
+
+# Counting Sort
+random.shuffle(array1)
+random.shuffle(array2)
+counting_sort(array1)
+counting_sort(array2)
+assert array1 == [1, 2, 2, 4, 5, 6, 8, 9, 10, 11], "testcases 41 failed..."
+assert array2 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "testcases 42 failed..."
+print("Counting Sort testcases passed...")
+
 
 print("All testcases passed succesfully!")

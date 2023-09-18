@@ -454,8 +454,6 @@ def insertion_sort(arr):
 
 		arr[j+1] = key
 
-	return arr
-
 # Heap Sort
 # Idea: Build a max-heap and pop the max element one at a time and heapify after
 #       each pop until no nodes remain.
@@ -479,7 +477,7 @@ def heapify(arr, n, i):
 	if l < n and arr[i] < arr[l]:
 		largest = l
 
-	if r < n and arr[i] < arr[r]:
+	if r < n and arr[largest] < arr[r]:
 		largest = r
 
 	# if parent is not largest, swap with largest and heapify down for swapped
@@ -519,8 +517,6 @@ def heap_sort(arr):
 		# remove bottom right node by setting n argument to i
 		heapify(arr, i, 0)
 
-	return arr
-
 # Selection Sort
 # Idea: Find the smallest element and place it at the beginning of the array.
 #       Repeat again for elements that are not yet sorted.
@@ -534,7 +530,108 @@ def selection_sort(arr):
 				min_idx = j
 		arr[i], arr[min_idx] = arr[min_idx], arr[i]
 
-	return arr
+# Merge Sort
+# Idea: Divide & Conquer algorithm. Divide array into sub-arrays and merge
+#       them in a sorted manner. Merge sub-arrays all the way up to the final.
+# Time: O(Nlog N) -> at each level of the recursion call stack (logN levels),
+#                    we process N elements. Thus, O(N * log N).
+# Space: O(N) -> auxillary array L & R are created of size N
+def merge_sort(arr):
+	# base case - single element in array is already sorted
+	if len(arr) <= 1:
+		return
+
+	# recursive case
+	else:
+		mid = len(arr)//2
+		L = arr[:mid]
+		R = arr[mid:]
+
+		# assume Left and Right halves are already sorted
+		merge_sort(L)
+		merge_sort(R)
+
+		# three pointers (one for L, one for R and one for main)
+		i = j = k = 0
+
+		while i < len(L) and j < len(R):
+			if L[i] < R[j]:
+				arr[k] = L[i]
+				i += 1
+			else:
+				arr[k] = R[j]
+				j += 1
+			k += 1
+
+		while i < len(L):
+			arr[k] = L[i]
+			i += 1
+			k += 1
+
+		while j < len(R):
+			arr[k] = R[j]
+			j += 1
+			k += 1
+
+# Quick Sort
+# Idea: Divide and Conquer sorting algorithm. Select a pivot and move all 
+#		elements smaller to the left and larger to the right of it. Recursively
+#       apply the same logic to subarrays left and right to the pivot.
+# Time: O(Nlog N) -> log N levels * sum of all elements = log N * N
+# Space: O(N) -> worst case N level recursive call stack when pivot is always
+#                the smallest element
+def quick_sort(arr):
+
+	def partition(lo, hi):
+		p = arr[hi]
+		j = lo
+		for i in range(lo, hi):
+			if arr[i] < p:
+				arr[i], arr[j] = arr[j], arr[i]
+				j += 1
+
+		arr[j], arr[hi] =  arr[hi], arr[j]
+
+		return j
+
+	def quick_sort_rec(lo, hi):
+		if lo < hi:
+			pivot = partition(lo, hi)
+
+			quick_sort_rec(lo, pivot-1)
+			quick_sort_rec(pivot+1, hi)
+
+	quick_sort_rec(0, len(arr)-1)
+
+
+# Counting Sort
+# Idea: Create a counter for each element in array and use that to generate
+#       a sorted array. Uses more space than other sorting algos.
+# Time: O(N + max) -> max is the largest value 
+# Space: O(max)
+def counting_sort(arr):
+	maximum = max(arr)
+	count = [0] * (maximum+1)
+	output = [0] * len(arr)
+
+	# build count array
+	for i in range(len(arr)):
+		count[arr[i]] += 1
+
+	# make it running cumulative
+	for i in range(1, len(count)):
+		count[i] += count[i-1]
+
+	# build output array
+	for i in range(len(arr)):
+		output[count[arr[i]]-1] = arr[i]
+		count[arr[i]] -= 1
+
+	# copy output back to array
+	for i in range(len(output)):
+		arr[i] =  output[i]
+
+
 
 
 
