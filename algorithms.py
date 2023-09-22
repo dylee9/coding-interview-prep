@@ -789,7 +789,64 @@ def dijkstrasSPT(G, u):
 
 	return dist
 
+# Bellman-Ford Algorithm
+# Idea: Is a single source shortest path algorithm much like Dijkstra's.
+#       However, BF algorithm can work with negative weight edges as long 
+#       as there are no negative cycles. As a result, it can also be used to 
+#       check for negative cycles if a reduction in distance can be found on
+#       the Nth iteration. This is because the algorithm expects all minimum
+#       distances to be found by the N-1 iteration since a shortest path
+#       betweeen N nodes has N-1 edges. The algorithm relies on the idea that
+#       after N-1 distance reductions, the optimal distances have been found
+#       and, otherwise, a negative cycle is found.
+# Time: O(VE) -> N iterations and loop through O(E) edges per iteration
+# Space: O(V) -> dist table
+def bellmanFord(G, u):
 
+	# array to keep track of min distances from source
+	dist = [float('-inf')] * G.vertices
+	dist[u] = 0
+
+	# For N-1 iterations, loop through all edges (u,v,w) for visited nodes
+	# and evaluate whether we can reduce the distance to v by going 
+	# through u and adding w.
+	for iteration in range(G.vertices - 1):
+		for u, v, w in G.graph:
+			if dist[u] != float('-inf') and dist[u] + w < dist[v]:
+				dist[v] = dist[u] + w 
+
+	# If there is a reduction in dist in the Nth iteration, then that
+	# implies a negative cycle exists.
+	for u, v, w in G.graph:
+		if dist[u] != float('-inf') and dist[u] + w < dist[v]:
+			print("Negative cycle found")
+			return
+
+	return dist
+
+# Floyd-Warshall Algorithm
+# Idea: Finds the shortest path between all pairs of vertices and works with
+#       negative edges as well. However, it will still not work with negative
+#       cycles. This approach takes on dynamic programming and uses 3 nested
+#       loops to update the DP table of shortest path pairs.
+# Time:
+# Space:
+def floydWarshall(G):
+	dist = [[float('-inf') for _ in range(G.vertices)] for _ in range(G.vertices)]
+
+	for i in range(G.vertices):
+		dist[i][i] = 0
+
+	for u, v, w in G.graph:
+		dist[u][v] = w
+
+	for i in range(G.vertices):
+		for j in range(G.vertices):
+			for k in range(G.vertices):
+				if dist[i][j] > dist[i][k] + dist[k][j]:
+					dist[i][j] = dist[i][k] + dist[k][j]
+
+	return dist
 
 
 
