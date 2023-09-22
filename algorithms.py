@@ -829,17 +829,25 @@ def bellmanFord(G, u):
 #       negative edges as well. However, it will still not work with negative
 #       cycles. This approach takes on dynamic programming and uses 3 nested
 #       loops to update the DP table of shortest path pairs.
-# Time:
-# Space:
+# Time: O(V^3) -> 3 nested loops
+# Space: O(V^2) -> 2d dist table (if AM is used as the graph, then O(1))
 def floydWarshall(G):
+
+	# array to keep track of node pair shortest paths
 	dist = [[float('-inf') for _ in range(G.vertices)] for _ in range(G.vertices)]
 
+	# shortest distance to itself is 0
 	for i in range(G.vertices):
 		dist[i][i] = 0
 
+	# initially, shortest distance from u,v is w if edge exists 
 	for u, v, w in G.graph:
 		dist[u][v] = w
 
+	# nested 3 loop
+	# for every 3 nodes (i,j,k) in the graph, if the distance from i to j
+	# is larger than taking a detour through k (i to k, k to j), then the
+	# shortest distance from i to j is through k.
 	for i in range(G.vertices):
 		for j in range(G.vertices):
 			for k in range(G.vertices):
@@ -847,6 +855,8 @@ def floydWarshall(G):
 					dist[i][j] = dist[i][k] + dist[k][j]
 
 	return dist
+
+# 
 
 
 
