@@ -70,6 +70,22 @@ class Graph:
 		else:
 			print("Error: nodes not found")
 
+class WeightedGraph:
+	def __init__(self):
+		self.V = []
+		self.E = []
+
+	def Vertex(self, v):
+		self.V.append(v)
+
+	def addEdge(self, u, v, w):
+		self.E.append([u, v, w])
+
+class WeightedAdjacencyMatrix:
+	def __init__(self, vertices):
+		self.V = vertices
+		self.graph = [[0 for column in range(vertices)]
+						for row in range(vertices)]
 
 ## Search Algos
 
@@ -630,6 +646,150 @@ def counting_sort(arr):
 	# copy output back to array
 	for i in range(len(output)):
 		arr[i] =  output[i]
+
+
+## Graph Algos
+
+# Kruskal's Algorithm (for Weighted Graph)
+# Idea: Greedy Algorithm used to find the minimum spanning tree in a connected
+#       weighted graph by picking edges starting with the lowest weights and
+#       adding them to the MST as long as a cycle is not created in the MST.
+# Time: O(Elog E) or O(Elog V)
+# Space: O(V + E)
+"""
+Explanation for Time Complexity:
+
+1) Sorting all edges takes O(Elog E)
+
+2) While Loop: Iterate through all edges and apply find-union algorithm. Find
+   with path compression takes O(log V). Union with rank takes O(log V).
+   Thus, this step takes O(Elog V)
+
+Overall time complexity is O(Elog E + Elog V) ~ O(Elog E) because E is at most
+V^2 and O(log V^2) = 2O(log V) ~ O(log V). Thus, final complexity is O(Elog E)
+or O(Elog V).
+"""
+def kruskalsMST(G):
+
+	# finds absolute parent of a node in a graph
+	# with path compression to improve runtime
+	def find(parent, i):
+		if parent[i] != i:
+			parent[i] = self.find(parent, parent[i]) # path compression
+
+		return parent[i]
+
+	# combines the two sets that contain x and y (if x and y are in the same
+	# set, then a cycle is formed)
+	# Uses union by rank to improve runtime
+	def union(parent, rank, x, y):
+		if rank[x] < rank[y]:
+			parent[x] = y
+		elif rank[x] > rank[y]
+			parent[y] = x
+		else:
+			parent[x] = y
+			rank[y] += 1
+
+	# output of edges in resulting MST
+	result = []
+
+	# array to keep track of absolute parents of nodes
+	parent = []
+
+	# array to keep track of ranks of absolute parents
+	rank = []
+
+	# populate parent and rank with initial values
+	# initially, every node is it's own parent and rank is 0
+	for node in G.V:
+		parent.append(node)
+		rank.append(0)
+
+	# index for G.edges
+	i = 0
+
+	# counter for number of vertices in MST
+	e = 0
+
+	# STEP 1: sort edges in graph by weight (low -> high)
+	G.E = sorted(G.E, key=lambda item: item[2])
+
+	# STEP 2: For each edge (starting with the lowest weight), if adding it
+	#         to the MST does NOT create a cycle, then we add it to the MST.
+	while e < len(G.V) - 1: #MST always has n-1 edges where n = number of vertices
+		u, v, w = self.graph[i] # lowest weight edge
+		i += 1
+
+		# find absolute parents of two nodes
+		x = find(parent, u)
+		y = find(parent, v)
+
+		# if u and v don't share the same set, then we add the edge to MST
+		# because it does not result in a cycle
+		if x != y:
+			e = e + 1
+			result.append([u, v, w])
+
+			# update parents and ranks via union by rank
+			union(parent, rank, x, y)
+
+	return result
+
+# Dijkstra's Algorithm (for Weighted Adjacency Matrix)
+# Idea: Greedy algorithm to find the Shorest Path Tree(SPT) with a given source
+#       as the root. Method is to greedily find the next shortest vertex
+#       to the SPT, update the distances to visited nodes and repeat
+#       until all nodes have been added to SPT.
+# Time:
+# Space:
+def dijkstrasSPT(G, u):
+
+	def minDistance(dist, sptSet):
+		min = float('inf')
+
+		# for every vertex nott in SPT, find min distance one
+		for u in range(G.vertices):
+			if dist[u] < min and not sptSet[u]:
+				min = dist[u]
+				min_idx = u
+
+		return min_idx
+
+	# array to keep track of distances from source u
+	dist = [float('inf')] * G.vertices
+	dist[u] = 0 
+
+	# array to keep track of SPT set of vertices
+	sptSet = [False] * G.vertices
+
+	# add vertices to SPT until SPT holds all vertices in graph
+	while count < G.vertices:
+
+		# STEP 1: Pick the minimum distance vertex from the set of vertices
+		#         not yet in SPT. Note: x will always be source u in the
+		#         first iteration because dist[u] will be the minimum distance
+		#         vertex with dist[u] == 0.
+		x = minDistance(dist, sptSet)
+
+		# STEP 2: Add the minimum distance vertex to the SPT
+		sptSet[x] = True
+
+		# STEP 3: For each neighbor of x (G.graph[x][y] > 0) that is not
+		#         already in the SPT (not sptSet[y]), if the new distance
+		#         to y from source u through x is shorter than the
+		#         previously known distance to y not through x, then update
+		#         the new distance to y with the shorter distance.
+		for y in range(G.vertices):
+			if G.graph[x][y] > 0 and not sptSet[y] and \
+					dist[y] > dist[x] + G.graph[x][y]:
+				dist[y] = dist[x] + G.graph[x][y]
+
+		count += 1
+
+	return dist
+
+
 
 
 
