@@ -13,6 +13,17 @@ class Graph_AL:
 		self.graph[u].append(v)
 		self.graph[v].append(u)
 
+# As DAGs using adjacency list
+class Graph_DAG:
+	def __init__(self):
+		self.graph = dict()
+
+	def addVertex(self, u):
+		self.graph[u] = list()
+
+	def addEdge(self, u, v):
+		self.graph[u].append(v)
+
 # As adjacency matrix
 class Graph_AM:
 	def __init__(self):
@@ -72,20 +83,22 @@ class Graph:
 
 class WeightedGraph:
 	def __init__(self):
-		self.V = []
-		self.E = []
+		self.vertices = 0
+		self.graph = []
 
-	def Vertex(self, v):
-		self.V.append(v)
+	def addVertex(self, v):
+		self.vertices += 1
 
 	def addEdge(self, u, v, w):
-		self.E.append([u, v, w])
+		self.graph.append([u, v, w])
 
-class WeightedAdjacencyMatrix:
-	def __init__(self, vertices):
-		self.V = vertices
-		self.graph = [[0 for column in range(vertices)]
-						for row in range(vertices)]
+class WeightedAdjacencyMatrix(Graph_AM):
+	def addEdge(self, i, j, w):
+		assert i < len(self.graph) 
+		assert j < len(self.graph)
+		self.graph[i][j] = w
+		self.graph[j][i] = w
+
 
 ## Search Algos
 
@@ -669,13 +682,13 @@ Overall time complexity is O(Elog E + Elog V) ~ O(Elog E) because E is at most
 V^2 and O(log V^2) = 2O(log V) ~ O(log V). Thus, final complexity is O(Elog E)
 or O(Elog V).
 """
-def kruskalsMST(G):
+def kruskals_mst(G):
 
 	# finds absolute parent of a node in a graph
 	# with path compression to improve runtime
 	def find(parent, i):
 		if parent[i] != i:
-			parent[i] = self.find(parent, parent[i]) # path compression
+			parent[i] = find(parent, parent[i]) # path compression
 
 		return parent[i]
 
@@ -685,7 +698,7 @@ def kruskalsMST(G):
 	def union(parent, rank, x, y):
 		if rank[x] < rank[y]:
 			parent[x] = y
-		elif rank[x] > rank[y]
+		elif rank[x] > rank[y]:
 			parent[y] = x
 		else:
 			parent[x] = y
@@ -702,7 +715,7 @@ def kruskalsMST(G):
 
 	# populate parent and rank with initial values
 	# initially, every node is it's own parent and rank is 0
-	for node in G.V:
+	for node in range(G.vertices):
 		parent.append(node)
 		rank.append(0)
 
@@ -713,12 +726,12 @@ def kruskalsMST(G):
 	e = 0
 
 	# STEP 1: sort edges in graph by weight (low -> high)
-	G.E = sorted(G.E, key=lambda item: item[2])
+	G.graph = sorted(G.graph, key=lambda item: item[2])
 
 	# STEP 2: For each edge (starting with the lowest weight), if adding it
 	#         to the MST does NOT create a cycle, then we add it to the MST.
-	while e < len(G.V) - 1: #MST always has n-1 edges where n = number of vertices
-		u, v, w = self.graph[i] # lowest weight edge
+	while e < G.vertices - 1: #MST always has n-1 edges where n = number of vertices
+		u, v, w = G.graph[i] # lowest weight edge
 		i += 1
 
 		# find absolute parents of two nodes
@@ -743,28 +756,30 @@ def kruskalsMST(G):
 #       until all nodes have been added to SPT.
 # Time:
 # Space:
-def dijkstrasSPT(G, u):
+def dijkstras_spt(G, u):
 
 	def minDistance(dist, sptSet):
 		min = float('inf')
 
 		# for every vertex nott in SPT, find min distance one
-		for u in range(G.vertices):
+		for u in range(G.count):
 			if dist[u] < min and not sptSet[u]:
 				min = dist[u]
 				min_idx = u
 
 		return min_idx
 
+	count = 0
+
 	# array to keep track of distances from source u
-	dist = [float('inf')] * G.vertices
+	dist = [float('inf')] * G.count
 	dist[u] = 0 
 
 	# array to keep track of SPT set of vertices
-	sptSet = [False] * G.vertices
+	sptSet = [False] * G.count
 
 	# add vertices to SPT until SPT holds all vertices in graph
-	while count < G.vertices:
+	while count < G.count:
 
 		# STEP 1: Pick the minimum distance vertex from the set of vertices
 		#         not yet in SPT. Note: x will always be source u in the
@@ -780,7 +795,7 @@ def dijkstrasSPT(G, u):
 		#         to y from source u through x is shorter than the
 		#         previously known distance to y not through x, then update
 		#         the new distance to y with the shorter distance.
-		for y in range(G.vertices):
+		for y in range(G.count):
 			if G.graph[x][y] > 0 and not sptSet[y] and \
 					dist[y] > dist[x] + G.graph[x][y]:
 				dist[y] = dist[x] + G.graph[x][y]
@@ -789,7 +804,7 @@ def dijkstrasSPT(G, u):
 
 	return dist
 
-# Bellman-Ford Algorithm
+# Bellman-Ford Algorithm (for Weighted Graph)
 # Idea: Is a single source shortest path algorithm much like Dijkstra's.
 #       However, BF algorithm can work with negative weight edges as long 
 #       as there are no negative cycles. As a result, it can also be used to 
@@ -801,10 +816,10 @@ def dijkstrasSPT(G, u):
 #       and, otherwise, a negative cycle is found.
 # Time: O(VE) -> N iterations and loop through O(E) edges per iteration
 # Space: O(V) -> dist table
-def bellmanFord(G, u):
+def bellman_ford(G, u):
 
 	# array to keep track of min distances from source
-	dist = [float('-inf')] * G.vertices
+	dist = [float('inf')] * G.vertices
 	dist[u] = 0
 
 	# For N-1 iterations, loop through all edges (u,v,w) for visited nodes
@@ -812,26 +827,26 @@ def bellmanFord(G, u):
 	# through u and adding w.
 	for iteration in range(G.vertices - 1):
 		for u, v, w in G.graph:
-			if dist[u] != float('-inf') and dist[u] + w < dist[v]:
+			if dist[u] != float('inf') and dist[u] + w < dist[v]:
 				dist[v] = dist[u] + w 
 
 	# If there is a reduction in dist in the Nth iteration, then that
 	# implies a negative cycle exists.
 	for u, v, w in G.graph:
-		if dist[u] != float('-inf') and dist[u] + w < dist[v]:
-			print("Negative cycle found")
+		if dist[u] != float('inf') and dist[u] + w < dist[v]:
+			raise Exception("Negative cycle found")
 			return
 
 	return dist
 
-# Floyd-Warshall Algorithm
+# Floyd-Warshall Algorithm (for Weighted Graph)
 # Idea: Finds the shortest path between all pairs of vertices and works with
-#       negative edges as well. However, it will still not work with negative
+#       negative edges as well. However, it will stil l not work with negative
 #       cycles. This approach takes on dynamic programming and uses 3 nested
 #       loops to update the DP table of shortest path pairs.
 # Time: O(V^3) -> 3 nested loops
 # Space: O(V^2) -> 2d dist table (if AM is used as the graph, then O(1))
-def floydWarshall(G):
+def floyd_warshall(G):
 
 	# array to keep track of node pair shortest paths
 	dist = [[float('-inf') for _ in range(G.vertices)] for _ in range(G.vertices)]
@@ -856,9 +871,136 @@ def floydWarshall(G):
 
 	return dist
 
-# 
+# Topological Sorting Algorithm (for Adjacency List)
+# Idea: Linear ordering of DAGs (Directed Acyclic Graphs). Essentially,
+#       we pick an unvisited node and apply DFS recursively and adding
+#       visited nodes to a stack AFTER visiting all it's neighbors.
+#       By doing so, we get write the lower level nodes to the stack
+#       first and then we can reverse the stack for the actual topological
+#       sorted order.
+# Time: O(V + E) -> Same as DFS
+# Space: O(V) -> keep tracking of stack
+def top_sort(G):
 
+	# DFS but keeps track of a stack and adds current node to it once
+	# all of it's neighbors are visited first
+	def dfs(u, visited, stack):
+		visited[u] = True
 
+		for neighbor in G.graph[u]:
+			if not visited[neighbor]:
+				dfs(neighbor, visited, stack)
+
+		stack.append(u)
+
+	# array to keep track of visited nodes
+	visited = [False] * len(G.graph)
+
+	# output array for topological ordering
+	stack = []
+
+	# start at any arbitrary node and apply DFS
+	# once all lowest level nodes are reached from that node, pick another
+	# node and repeat until all vertices have been visited
+	for v in range(G.graph):
+		if not visited[v]:
+			dfs(v, visited, stack)
+
+	# stack is the order of low to high but we want to return high to low
+	return stack[::-1]
+
+# Flood Fill Algorithm
+# Idea: A dynamic programming + BFS algorithm to fill an index of a 2D matrix
+#       with a new color and spread it out to all adjacent indices with the 
+#       same color until no more valid indices are left to change. 
+#       Invalid indices examples include going past the boundaries of the 
+#       matrix, running into a wall or a different color index.
+# Time: O(M*N) -> worst case we run bfs for every cell of matrix
+# Space: O(M*N) -> worst case we have a queue with every cell of matrix
+def flood_fill(G, x, y, new_color):
+
+	n = len(G)
+	m = len(G[0])
+	prev_color = G[y][x]
+	dirs = [(1,0),(0,1),(-1,0),(0,-1)]
+
+	# helper function to determine whether cell should be flood-filled.
+	# cells that are OOB or already the new color or not the previous
+	# color are not valid cells to be flood-filled.
+	def is_valid(i, j):
+		if i < 0 or i >= n \
+				or j < 0 or j >= m \
+				or G[i][j] != prev_color \
+				or G[i][j] == new_color:
+			return False
+
+		return True
+
+	# BFS function that checks 4 directions (up, right, down, left) for valid
+	# cells and flood-fills them
+	def bfs(x, y):
+		Q = []
+		Q.append((y,x))
+		G[y][x] = new_color
+
+		while Q:
+			posX, posY = Q.pop()
+
+			for dirX, dirY in dirs:
+				if is_valid(posY+dirY, posX+dirX):
+					G[posY+dirY][posX+dirX] = new_color
+					Q.append((posY+dirY,posX+dirX))
+
+	return G
+
+# Lee's Algorithm
+# Idea: In a MxN matrix, use BFS to find the shortest path from a source cell
+#       to the target cell. Often, this is used to solve the shortest path 
+#       from the start to the cheese within the maze. In the matrix, 1 is used
+#       to represent an open path and 0 to represent a wall.
+# Time: O(M*N) -> worst case, visit every cell before finding target
+# Space: O(M*N) -> visited matrix
+def lees(G, x1, y1, x2, y2):
+
+	n = len(G)
+	m = len(G[0])
+	dirs = [(1,0),(0,1),(-1,0),(0,-1)]
+
+	# helper function to determine if index is OOB or a wall
+	def is_valid(i, j):
+		if i < 0 or i >= n \
+				or j < 0 or j >= m \
+				or G[j][i] == 0:
+			return False
+
+		return True
+
+	# BFS algorithm that visits adjacent neighbors and the Q keeps
+	# track of the depth/distance
+	Q = []
+	Q.append((y1, x1, 0))
+
+	# array to keep track of visited cells
+	visited = [[False for _ in range(m)] for _ in range(n)]
+	visisted[y1][x1] = True
+
+	# iterative BFS using queue
+	while Q:
+		posY, posX, dist = Q.pop(0)
+
+		# if target is found, return dist
+		if posX == x2 and posY == y2:
+			return dist
+
+		# for every neighbor in left, right, up down direction, if
+		# valid cell and not visited, add to queue and repeat
+		for dirX, dirY in dirs:
+			if is_valid(posY+dirY, posX+dirX) \
+					and not visited[posY+dirY][posX+dirX]:
+				Q.append((posY+dirY, posX+dirX, dist+1))
+				visited[posY+dirY][posX+dirX] = True
+
+	return -1
 
 
 

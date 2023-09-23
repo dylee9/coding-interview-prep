@@ -130,5 +130,95 @@ assert array1 == [1, 2, 2, 4, 5, 6, 8, 9, 10, 11], "testcases 41 failed..."
 assert array2 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "testcases 42 failed..."
 print("Counting Sort testcases passed...")
 
+## Graph Algorithm Tests
+
+# Kruskal's Algorithm
+WG = WeightedGraph()
+WG.addVertex(0)
+WG.addVertex(1)
+WG.addVertex(2)
+WG.addVertex(3)
+WG.addVertex(4)
+WG.addVertex(5)
+WG.addVertex(6)
+WG.addVertex(7)
+WG.addEdge(0,1,2)
+WG.addEdge(1,2,4)
+WG.addEdge(2,3,2)
+WG.addEdge(2,6,1)
+WG.addEdge(2,4,1)
+WG.addEdge(4,5,3)
+WG.addEdge(5,6,6)
+WG.addEdge(6,7,2)
+answer = [
+	[2, 6, 1],
+	[2, 4, 1],
+	[0, 1, 2], 
+	[2, 3, 2], 
+	[6, 7, 2], 
+	[4, 5, 3], 
+	[1, 2, 4]
+]
+assert kruskals_mst(WG) == answer, "testcases 43 failed..."
+print("Kruskal's testcases passed...")
+
+# Dijkstra's Algorithm
+W_AM_G = WeightedAdjacencyMatrix()
+W_AM_G.addVertex(0)
+W_AM_G.addVertex(1)
+W_AM_G.addVertex(2)
+W_AM_G.addVertex(3)
+W_AM_G.addVertex(4)
+W_AM_G.addVertex(5)
+W_AM_G.addVertex(6)
+W_AM_G.addVertex(7)
+W_AM_G.addVertex(8)
+W_AM_G.addEdge(0,1,2)
+W_AM_G.addEdge(0,3,3)
+W_AM_G.addEdge(1,2,1)
+W_AM_G.addEdge(3,2,7)
+W_AM_G.addEdge(2,4,4)
+W_AM_G.addEdge(3,5,2)
+W_AM_G.addEdge(4,8,1)
+W_AM_G.addEdge(4,5,1)
+W_AM_G.addEdge(8,5,2)
+W_AM_G.addEdge(5,6,3)
+W_AM_G.addEdge(6,7,1)
+answer = [6,5,4,3,0,1,4,5,1]
+assert dijkstras_spt(W_AM_G, 4) == answer, "testcases 44 failed..."
+print("Dijkstra's testcases passed...")
+
+# Bellman-Ford Algorithm
+WG = WeightedGraph()
+WG.addVertex(0)
+WG.addVertex(1)
+WG.addVertex(2)
+WG.addVertex(3)
+WG.addVertex(4)
+WG.addVertex(5)
+WG.addVertex(6)
+WG.addEdge(0,1,1)
+WG.addEdge(0,2,2)
+WG.addEdge(1,3,1)
+WG.addEdge(2,3,-3)
+WG.addEdge(4,2,-7)
+WG.addEdge(3,4,11)
+WG.addEdge(4,6,5)
+WG.addEdge(2,5,2)
+answer = [0,1,2,-1,10,4,15]
+assert bellman_ford(WG, 0) == answer, "testcases 45 failed..."
+
+WG.addVertex(7)
+WG.addEdge(5,7,-4)
+WG.addEdge(7,2,1)
+try:
+	res = bellman_ford(WG, 0)
+	print("testcases 46 failed...")
+except Exception as e:
+	pass
+print("Bellman-Ford testcases passed...")
+
+# Floyd-Warshall Algorithm
+
 
 print("All testcases passed succesfully!")
