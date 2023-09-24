@@ -99,6 +99,11 @@ class WeightedAdjacencyMatrix(Graph_AM):
 		self.graph[i][j] = w
 		self.graph[j][i] = w
 
+# Linked Lists
+class LLNode:
+	def __init__(self, x):
+		self.val = x
+		self.next = None
 
 ## Search Algos
 
@@ -1002,6 +1007,206 @@ def lees(G, x1, y1, x2, y2):
 
 	return -1
 
+## Array Algos
+
+# Kadane's Algorithm
+# Idea: A greedy/DP solution to the largest continiguous subarray problem.
+#       Main idea is that we can calculate the largest continuguous
+#       subarray ending at each position i of the array by taking the max
+#       of either the maximum continuguous subarray sum of the previous
+#       index + the current index or without the current index. 
+# Time: O(n)
+# Space: O(1)
+def kadanes(arr):
+
+	# keeps track of max sum for each ending index
+	current_max = 0
+
+	# keeps track of global max for output
+	global_max = float('-inf')
+
+	# find the largest contiguous subarray sum for each ending position i
+	for i in range(len(arr)):
+
+		# we can either choose to start new max at i or keep max subarray before
+		# i and add arr[i]. Take the max of either.
+		current_max = max(arr[i], current_max+arr[i])
+
+		# update global max if found
+		if current_max > global_max:
+			global_max = current_max
+
+	return global_max
+
+# Floyd's Cycle Detection Algorithm
+# Idea: A pointer algorithm to detect cycles in linked lists. The main idea is
+#       to have one pointer going fast along a linked list (2 nodes at a time)
+#       and another pointer going slow along a linked list (1 node at a time).
+#       The main idea is that if the slow and fast pointer ever reach the same
+#       node, then a cycle is found because it implies the fast pointer went
+#       through a cycle to end up back behind the slow pointer and eventually
+#       land on the same node as the slow pointer. If either pointer reaches
+#       the end of a LL, then there is no cycle.
+# Time: O(n)
+# Space: O(1)
+def floyds_cycle_detection(head):
+	fast = head
+	slow = head
+
+	while slow != None and fast != None and fast.next != None:
+		slow = slow.next
+		fast = fast.next.next
+
+		if slow == fast:
+			return 1
+
+	return 0
+
+# KMP (Knuth-Morris-Pratt) Algorithm
+# Idea: A string pattern matching algorithm. The brute force approach takes 
+#       O(n*m) since it has to backtrack whenever a mistmatch is found. With
+#       KMP, we reduce any backtracking of the text string by using a longest
+#       suffix preffix array, which acts as a dictionary that tells us where in
+#       the pattern we are still matched up to regardless of the latest
+#       mismatch. Thus, we don't backtrack on the text and only on the pattern.
+# Time: O(n+m)
+# Space: O(1)
+def KMP(text, pattern):
+	m = len(pattern)
+	n = len(text)
+
+	def generateLPSArray():
+
+		# array to keep track of longest preffix suffix length
+		lps = [0] * m
+
+		# keep track of preffix
+		l = 0
+
+		# loop through pattern
+		i = 1
+
+		while i < m:
+			if pattern[i] == pattern[l]:
+				l += 1
+				lps[i] = l
+				i += 1
+			else:
+				# tricky case: similar to KMP but basically backtrack within
+				#              within pattern to last seen preffix that might
+				#              still match
+				if l != 0:
+					l = lps[l-1]
+
+				else:
+					lps[i] = 0
+					i += 1
+
+		return lps
+
+	lps = generateLPSArray()
+	output = []
+	i = 0
+	j = 0
+
+	# when there are equal or more characters left in text compared to pattern
+	# (if there isn't, then pattern can't match anyways)
+	while (n - i) >= (m - j):
+
+		if text[i] == pattern[j]:
+
+			# full match found
+			if j == m-1:
+				output.append(i-j)
+				# pattern pointer backtracks to last seen longest preffix length
+				j = lps[j-1]
+
+			i += 1
+			j += 1
+
+		elif j > 0:
+			# pattern pointer backtracks to last seen longest preffix length
+			j = lps[i-1]
+
+		else:
+			i += 1
+
+	return output
+
+# Quick Select -> finds the kth smallest/largest element in an unsorted list
+# Idea: Similar to quick sort except instead of recursively partitioning both
+#       sides of the pivot, only recurse in the section that holds the kth
+#       value.
+# Time: O(n)
+# Space: O(1)
+def quick_select(arr, k):
+
+	def partition(lo, hi):
+		p = arr[hi]
+		j = lo
+		for i in range(lo, hi):
+			if arr[i] < p:
+				arr[i], arr[j] = arr[j], arr[i]
+				j += 1
+
+		arr[j], arr[hi] =  arr[hi], arr[j]
+
+		return j
+
+	def quick_select_rec(lo, hi, k):
+		if lo < hi:
+			pivot = partition(lo, hi)
+
+			if pivot == k-1:
+				return arr[pivot]
+			elif pivot < k-1:
+				return quick_select_rec(pivot+1, hi, k-pivot-1)
+			else:
+				return quick_select_rec(lo, pivot-1, k)
+
+	return quick_select_rec(0, len(arr)-1, k)
+
+# Boyer-Moore Voting Algorithm
+# Idea: A voting algorithm used to find the majority element in an array. A
+#       majority element is one that occurs atleast N/2 times in the array.
+#       The algorithm works by voting for candidate elements without having
+#       to keep a counter for each distinct element. We iterate once to find
+#       the majority element and then another loop to count if it has more
+#       than N/2 occurances. 
+# Time: O(n)
+# Space: O(1)
+def boyer_moore_voting(arr):
+	candidate = -1
+	votes = 0
+
+	# loop 1 - take votes for each element
+	# majority element will come out from this loop if it TRULY is the majority
+	for e in arr:
+		if not votes:
+			candidate = e
+			votes += 1
+		else:
+			if e == candidate:
+				votes += 1
+			else:
+				votes -= 1
+
+	# loop 2 - count majority
+	count = 0
+	for e in arr:
+		if e == candidate:
+			count += 1
+
+	if count >= len(arr)//2:
+		return candidate
+	else:
+		return -1
+
+## Basics
+
+# Huffman Coding Compression Algorithm
 
 
+
+	
 

@@ -220,5 +220,7 @@ print("Bellman-Ford testcases passed...")
 
 # Floyd-Warshall Algorithm
 
+# test
+print(computeLPSArray("ABABCABAABAB", 12, [0]*12))
 
 print("All testcases passed succesfully!")
