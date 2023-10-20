@@ -759,8 +759,11 @@ def kruskals_mst(G):
 #       as the root. Method is to greedily find the next shortest vertex
 #       to the SPT, update the distances to visited nodes and repeat
 #       until all nodes have been added to SPT.
-# Time:
-# Space:
+# Time: O(V^2) -> Adj Matrix Implementation
+# Space: O(V^2) -> Adj Matrix Implementation (to store it)
+
+# Link to Adj List & Priority Queue w/ Min-Heap Implementation: https://gist.github.com/kachayev/5990802
+
 def dijkstras_spt(G, u):
 
 	def minDistance(dist, sptSet):
@@ -809,6 +812,27 @@ def dijkstras_spt(G, u):
 
 	return dist
 
+# Dijkstra's Algorithm (using python heapq and adj list)
+# Time: O(E LogV)
+# Space: O(E)
+def dijkstra(graph, start):
+    distances = {}
+    heap = [(0, start)]
+
+    while heap:
+        dist, node = hq.heappop(heap)
+        if node in distances:
+            continue  # Already encountered before
+        # We know that this is the first time we encounter node.
+        #   As we pull nodes in order of increasing distance, this 
+        #   must be the node's shortest distance from the start node.
+        distances[node] = dist
+        for neighbor, weight in graph[node]:
+            if neighbor not in distances:
+                hq.heappush(heap, (dist + weight, neighbor))
+
+    return distances
+
 # Bellman-Ford Algorithm (for Weighted Graph)
 # Idea: Is a single source shortest path algorithm much like Dijkstra's.
 #       However, BF algorithm can work with negative weight edges as long 
@@ -846,7 +870,7 @@ def bellman_ford(G, u):
 
 # Floyd-Warshall Algorithm (for Weighted Graph)
 # Idea: Finds the shortest path between all pairs of vertices and works with
-#       negative edges as well. However, it will stil l not work with negative
+#       negative edges as well. However, it will still not work with negative
 #       cycles. This approach takes on dynamic programming and uses 3 nested
 #       loops to update the DP table of shortest path pairs.
 # Time: O(V^3) -> 3 nested loops
